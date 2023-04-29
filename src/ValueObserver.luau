@@ -22,7 +22,9 @@ type TableObserverCallback<T> = Types.TableObserverCallback<T>
 local function ValueObserver<T>(valueGetter: () -> T, changedSignal: Signal<any>, callback: TableObserverCallback<T>): Cleanup
     callback(valueGetter())
 
-    local connection = changedSignal:Connect(callback)
+    local connection = changedSignal:Connect(function()
+        callback(valueGetter())
+    end)
 
     return function()
         connection:Disconnect()

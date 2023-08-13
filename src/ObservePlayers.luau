@@ -1,5 +1,5 @@
 local Types = require(script.Parent.Types)
-local Players = game:GetService("PlayerService")
+local Players = game:GetService("Players")
 
 type Cleanup = Types.Cleanup
 type TableObserverCallback<T> = Types.TableObserverCallback<T>

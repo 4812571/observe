@@ -29,6 +29,7 @@ local ObserveTags = require(script.ObserveTags)
 local ObserveTagged = require(script.ObserveTagged)
 local ObserveChildren = require(script.ObserveChildren)
 local ObserveDescendants = require(script.ObserveDescendants)
+local ObservePlayers = require(script.ObservePlayers)
 
 --[=[
     @class Observe
@@ -47,6 +48,7 @@ local Observe = {
     ObserveTagged = ObserveTagged,
     ObserveChildren = ObserveChildren,
     ObserveDescendants = ObserveDescendants,
+    ObservePlayers = ObservePlayers,
 }
 
 return Observe

@@ -22,7 +22,7 @@ local TableObserver = require(script.Parent.TableObserver)
     ```
 ]=]
 
-local function ObservePlayers(callback: TableObserverCallback<Instance>): Cleanup
+local function ObservePlayers(callback: TableObserverCallback<Player>): Cleanup
     return TableObserver(Players:GetPlayers(), Players.PlayerAdded, Players.PlayerRemoving, callback)
 end
 

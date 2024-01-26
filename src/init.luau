@@ -1,54 +1,38 @@
---[=[
-    @within Observe
-    @type Cleanup () -> ()
-    Cleanup function type
-]=]
+local Types = require(script.Types)
 
---[=[
-    @within Observe
-    @type ValueObserverCallback<T> (T) -> ()
-    Value observer callback type
-]=]
+-- Function Types
+export type Cleanup = Types.Cleanup
+export type Callback<T> = Types.Callback<T>
+export type Handler<T...> = Types.Handler<T...>
 
---[=[
-    @within Observe
-    @type TableObserverCallback<T> (T) -> (Cleanup)
-    Table observer callback type
-]=]
+-- Trait Types
+export type Signal<T> = Types.Signal<T>
 
--- Abstract
-local TableObserver = require(script.TableObserver)
+local Signal = require(script.Signal)
+local Instance = require(script.Instance)
+local Player = require(script.Player)
+local Collection = require(script.Collection)
 
--- Value
-local ObserveAttribute = require(script.ObserveAttribute)
-local ObserveProperty = require(script.ObserveProperty)
-local ObserveValue = require(script.ObserveValue)
-
--- Table
-local ObserveTags = require(script.ObserveTags)
-local ObserveTagged = require(script.ObserveTagged)
-local ObserveChildren = require(script.ObserveChildren)
-local ObserveDescendants = require(script.ObserveDescendants)
-local ObservePlayers = require(script.ObservePlayers)
-
---[=[
-    @class Observe
-]=]
 local Observe = {
-    -- Abstract
-    TableObserver = TableObserver,
+    -- Signal Adapters
+    ChangedSignal = Signal.ChangedSignal,
+    SetClearSignals = Signal.SetClearSignals,
+    AddedRemovedSignal = Signal.AddedRemovedSignals,
 
-    -- Value
-    ObserveAttribute = ObserveAttribute,
-    ObserveProperty = ObserveProperty,
-    ObserveValue = ObserveValue,
+    -- Instance Management
+    Children = Instance.Children,
+    Descendants = Instance.Descendants,
+    Property = Instance.Property,
+    Attribute = Instance.Attribute,
 
-    -- Table
-    ObserveTags = ObserveTags,
-    ObserveTagged = ObserveTagged,
-    ObserveChildren = ObserveChildren,
-    ObserveDescendants = ObserveDescendants,
-    ObservePlayers = ObservePlayers,
+    -- Player Management
+    Players = Player.Players,
+    Character = Player.Character,
+    PlayerCharacters = Player.PlayerCharacters,
+
+    -- Collection Management
+    Tags = Collection.Tags,
+    Tagged = Collection.Tagged,
 }
 
 return Observe

@@ -55,7 +55,7 @@ local function ObserveSetClearSignals<T>(value: T, set: Signal<T>, clear: Signal
             cleanup()
         end
 
-        cleanup = fn(nil)
+        cleanup = nil
     end
 
     local setConnection = set:Connect(onSet)

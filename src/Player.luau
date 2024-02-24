@@ -9,7 +9,6 @@ local Signal = require(script.Parent.Signal)
 local ObserveSetClearSignals = Signal.SetClearSignals
 local ObserveAddedRemovedSignals = Signal.AddedRemovedSignals
 
-
 --[=[
     @within Observe
     @return Cleanup

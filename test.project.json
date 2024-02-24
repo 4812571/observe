@@ -1,0 +1,16 @@
+{
+    "name": "observe-test",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedStorage": {
+            "Packages": {
+                "$className": "Folder",
+                "$path": "Packages",
+
+                "Net": {
+                    "$path": "default.project.json"
+                }
+            }
+        }
+    }
+}

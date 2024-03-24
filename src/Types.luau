@@ -1,7 +1,10 @@
 -- Function Types
 export type Cleanup = () -> ()
 export type Callback<T...> = (T...) -> ()
-export type Handler<T...> = (T...) -> Cleanup?
+
+type HandlerWithCleanup<T...> = (T...) -> Cleanup
+type HandlerWithoutCleanup<T...> = (T...) -> ()
+export type Handler<T...> = HandlerWithCleanup<T...> | HandlerWithoutCleanup<T...>
 
 -- Trait Types
 export type Connection = {

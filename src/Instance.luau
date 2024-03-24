@@ -22,7 +22,7 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
     local cleanup = nil
 
     if child then
-        fn(child)
+        (fn :: any)(child)
     end
 
     local function onChildAdded(added)
@@ -33,7 +33,7 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
 
         -- Store the current child, call the associated function, and store the cleanup function.
         child = added
-        cleanup = fn(added)
+        cleanup = (fn :: any)(added)
     end
 
     local function onChildRemoved(removed)
@@ -57,7 +57,7 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
         -- If there is another child, handle it the same way as if it was added.
         if foundChild then
             child = foundChild
-            cleanup = fn(foundChild)
+            cleanup = (fn :: any)(foundChild)
         end
     end
 
@@ -103,14 +103,14 @@ end
     Note: If the property is not a valid property of the instance, this will throw an error.
 ]=]
 local function ObserveProperty<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = fn(instance[name] :: T)
+    local cleanup = (fn :: any)(instance[name] :: T)
 
     local function onChanged()
         if cleanup then
             cleanup()
         end
 
-        cleanup = fn(instance[name] :: T)
+        cleanup = (fn :: any)(instance[name] :: T)
     end
 
     local connection = instance:GetPropertyChangedSignal(name):Connect(onChanged)
@@ -131,14 +131,14 @@ end
     @return Cleanup -- A function that will end the observation
 ]=]
 local function ObserveAttribute<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = fn(instance:GetAttribute(name) :: T)
+    local cleanup = (fn :: any)(instance:GetAttribute(name) :: T)
 
     local function onChanged()
         if cleanup then
             cleanup()
         end
 
-        cleanup = fn(instance:GetAttribute(name) :: T)
+        cleanup = (fn :: any)(instance:GetAttribute(name) :: T)
     end
 
     local connection = instance:GetAttributeChangedSignal(name):Connect(onChanged)

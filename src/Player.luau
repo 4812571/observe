@@ -39,7 +39,7 @@ end
 local function ObservePlayerCharacters(fn: Handler<Player, Model>): Cleanup
     return ObservePlayers(function(player: Player)
         return ObserveCharacter(player, function(character: Model)
-            return fn(player, character)
+            return (fn :: any)(player, character)
         end)
     end)
 end

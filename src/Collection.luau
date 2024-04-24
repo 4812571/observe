@@ -19,7 +19,7 @@ end
     Observes all of the instances that have the given tag
 ]=]
 local function ObserveTagged(tag: string, fn: Handler<Instance>): Cleanup
-    return ObserveAddedRemovedSignals(CollectionService:GetTagged(tag), CollectionService.InstanceAdded, CollectionService.InstanceRemoved, fn)
+    return ObserveAddedRemovedSignals(CollectionService:GetTagged(tag), CollectionService:GetInstanceAddedSignal(tag), CollectionService:GetInstanceRemovedSignal(tag), fn)
 end
 
 local Collection = {

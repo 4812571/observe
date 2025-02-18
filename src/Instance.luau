@@ -2,6 +2,8 @@ local Types = require(script.Parent.Types)
 
 type Cleanup = Types.Cleanup
 type Handler<T...> = Types.Handler<T...>
+type Signal<S, C, T...> = Types.Signal<S, C, T...>
+type RBXSignal<T...> = Types.RBXSignal<T...>
 
 local Signal = require(script.Parent.Signal)
 local ObserveAddedRemovedSignals = Signal.AddedRemovedSignals
@@ -22,10 +24,10 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
     local cleanup = nil
 
     if child then
-        (fn :: any)(child)
+        fn(child)
     end
 
-    local function onChildAdded(added)
+    local function onChildAdded(added: Instance)
         -- If there is already a currently observed child, we don't need to do anything.
         if child then
             return
@@ -33,10 +35,10 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
 
         -- Store the current child, call the associated function, and store the cleanup function.
         child = added
-        cleanup = (fn :: any)(added)
+        cleanup = fn(added)
     end
 
-    local function onChildRemoved(removed)
+    local function onChildRemoved(removed: Instance)
         -- If the removed child is not the currently observed child, it can be safely ignored.
         if removed ~= child then
             return
@@ -57,7 +59,7 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
         -- If there is another child, handle it the same way as if it was added.
         if foundChild then
             child = foundChild
-            cleanup = (fn :: any)(foundChild)
+            cleanup = fn(foundChild)
         end
     end
 
@@ -81,7 +83,7 @@ end
     @return Cleanup -- A function that will end the observation
 ]=]
 local function ObserveChildren(instance: Instance, fn: Handler<Instance>): Cleanup
-    return ObserveAddedRemovedSignals(instance:GetChildren(), instance.ChildAdded, instance.ChildRemoved, fn)
+    return ObserveAddedRemovedSignals(instance:GetChildren(), instance.ChildAdded :: RBXSignal<Instance>, instance.ChildRemoved :: RBXSignal<Instance>, fn)
 end
 
 --[=[
@@ -91,7 +93,7 @@ end
     @return Cleanup -- A function that will end the observation
 ]=]
 local function ObserveDescendants(instance: Instance, fn: Handler<Instance>): Cleanup
-    return ObserveAddedRemovedSignals(instance:GetDescendants(), instance.DescendantAdded, instance.DescendantRemoving, fn)
+    return ObserveAddedRemovedSignals(instance:GetDescendants(), instance.DescendantAdded :: RBXSignal<Instance>, instance.DescendantRemoving :: RBXSignal<Instance>, fn)
 end
 
 --[=[
@@ -103,14 +105,14 @@ end
     Note: If the property is not a valid property of the instance, this will throw an error.
 ]=]
 local function ObserveProperty<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = (fn :: any)(instance[name] :: T)
+    local cleanup = fn((instance :: any)[name])
 
     local function onChanged()
         if cleanup then
             cleanup()
         end
 
-        cleanup = (fn :: any)(instance[name] :: T)
+        cleanup = fn((instance :: any)[name])
     end
 
     local connection = instance:GetPropertyChangedSignal(name):Connect(onChanged)
@@ -131,14 +133,14 @@ end
     @return Cleanup -- A function that will end the observation
 ]=]
 local function ObserveAttribute<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = (fn :: any)(instance:GetAttribute(name) :: T)
+    local cleanup = fn(instance:GetAttribute(name) :: T)
 
     local function onChanged()
         if cleanup then
             cleanup()
         end
 
-        cleanup = (fn :: any)(instance:GetAttribute(name) :: T)
+        cleanup = fn(instance:GetAttribute(name) :: T)
     end
 
     local connection = instance:GetAttributeChangedSignal(name):Connect(onChanged)

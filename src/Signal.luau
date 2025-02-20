@@ -11,6 +11,7 @@ local State = require(script.Parent.State)
 
 local ObserveValue = State.Value
 local ObserveDistinctArray = State.DistinctArray
+local ObserveClearableValue = State.ClearableValue
 
 --[=[
     Observe a signal and call a handler with whatever value the signal passes to it.
@@ -32,35 +33,20 @@ end
     If the clear signal is fired, the handler will be called with nil.
 ]=]
 local function ObserveSetClearSignals<S1, C1, S2, C2, T>(value: T, set: Signal<S1, C1, T>, clear: Signal<S2, C2>, fn: Handler<T?>): Cleanup
-    -- Initially call the handler with the current value
-    local cleanup = fn(value)
-
-    local function onSet(newValue)
-        if cleanup then
-            cleanup()
-        end
-
-        cleanup = fn(newValue)
-    end
+    local cleanup, onChanged = ObserveClearableValue(value, fn)
 
     local function onClear()
-        if cleanup then
-            cleanup()
-        end
-
-        cleanup = nil
+        onChanged(nil)
     end
 
-    local setConnection = set:Connect(onSet)
+    local setConnection = set:Connect(onChanged)
     local clearConnection = clear:Connect(onClear)
 
     return function()
         setConnection:Disconnect()
         clearConnection:Disconnect()
 
-        if cleanup then
-            cleanup()
-        end
+        cleanup()
     end
 end
 

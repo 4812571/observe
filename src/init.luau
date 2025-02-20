@@ -13,12 +13,20 @@ local Signal = require(script.Signal)
 local Instance = require(script.Instance)
 local Player = require(script.Player)
 local Collection = require(script.Collection)
+local State = require(script.State)
 
 local Observe = {
     -- Signal Adapters
     ChangedSignal = Signal.ChangedSignal,
     SetClearSignals = Signal.SetClearSignals,
     AddedRemovedSignal = Signal.AddedRemovedSignals,
+
+    -- State Adapters
+    Value = State.Value,
+    Array = State.Array,
+    DistinctArray = State.DistinctArray,
+    Set = State.Set,
+    Map = State.Map,
 
     -- Instance Management
     Children = Instance.Children,

@@ -24,6 +24,19 @@ local function ObserveValue<T1, T2>(value: T1, fn: Handler<T1 | T2>): (Cleanup, 
         end
     end, onChanged
 end
+--[=[
+    Observe a changed callback and call a handler with whatever non-nil value the changed callback is provided.
+    When the value is nil or the cleanup callback is called the handler will not be called.
+]=]
+local function ObserveClearableValue<T1, T2>(value: T1?, fn: Handler<T1 | T2>): (Cleanup, (T2?) -> ())
+    return ObserveValue(value, function(newValue: (T1 | T2)?)
+        if newValue == nil then
+            return
+        end
+
+        return fn(newValue)
+    end)
+end
 
 --[=[
     Observe an added & removed callback and call a handler any time a value is added.
@@ -200,6 +213,7 @@ end
 
 local State = {
     Value = ObserveValue,
+    ClearableValue = ObserveClearableValue,
     Array = ObserveArray,
     DistinctArray = ObserveDistinctArray,
     Set = ObserveSet,

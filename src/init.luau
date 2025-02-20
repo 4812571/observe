@@ -23,6 +23,7 @@ local Observe = {
 
     -- State Adapters
     Value = State.Value,
+    ClearableValue = State.ClearableValue,
     Array = State.Array,
     DistinctArray = State.DistinctArray,
     Set = State.Set,

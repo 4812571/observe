@@ -8,6 +8,10 @@ type RBXSignal<T...> = Types.RBXSignal<T...>
 local Signal = require(script.Parent.Signal)
 local ObserveAddedRemovedSignals = Signal.AddedRemovedSignals
 
+local State = require(script.Parent.State)
+local ObserveValue = State.Value
+local ObserveClearableValue = State.ClearableValue
+
 --[=[
     @within Observe
     @param instance Instance -- The instance to observe
@@ -21,11 +25,8 @@ local ObserveAddedRemovedSignals = Signal.AddedRemovedSignals
 ]=]
 local function ObserveChild(instance: Instance, name: string, fn: Handler<Instance>): Cleanup
     local child = instance:FindFirstChild(name)
-    local cleanup = nil
 
-    if child then
-        fn(child)
-    end
+    local cleanup, onChild = ObserveClearableValue(child, fn)
 
     local function onChildAdded(added: Instance)
         -- If there is already a currently observed child, we don't need to do anything.
@@ -33,9 +34,9 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
             return
         end
 
-        -- Store the current child, call the associated function, and store the cleanup function.
+        -- Store the current child and update the clearable value.
         child = added
-        cleanup = fn(added)
+        onChild(child)
     end
 
     local function onChildRemoved(removed: Instance)
@@ -44,23 +45,9 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
             return
         end
 
-        -- Clear the current child
-        child = nil
-
-        -- Handle the previous cleanup
-        if cleanup then
-            cleanup()
-            cleanup = nil
-        end
-
-        -- Check if there is another child with the same name
-        local foundChild = instance:FindFirstChild(name)
-
-        -- If there is another child, handle it the same way as if it was added.
-        if foundChild then
-            child = foundChild
-            cleanup = fn(foundChild)
-        end
+        -- Look for another child with the same name and update the clearable value.
+        child = instance:FindFirstChild(name)
+        onChild(child)
     end
 
     local addedConnection = instance.ChildAdded:Connect(onChildAdded)
@@ -70,9 +57,7 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
         addedConnection:Disconnect()
         removedConnection:Disconnect()
 
-        if cleanup then
-            cleanup()
-        end
+        cleanup()
     end
 end
 
@@ -105,24 +90,16 @@ end
     Note: If the property is not a valid property of the instance, this will throw an error.
 ]=]
 local function ObserveProperty<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = fn((instance :: any)[name])
+    local cleanup, onChanged = ObserveValue((instance :: any)[name] :: T, fn)
 
-    local function onChanged()
-        if cleanup then
-            cleanup()
-        end
-
-        cleanup = fn((instance :: any)[name])
-    end
-
-    local connection = instance:GetPropertyChangedSignal(name):Connect(onChanged)
+    local connection = instance:GetPropertyChangedSignal(name):Connect(function()
+        onChanged((instance :: any)[name] :: T)
+    end)
 
     return function()
         connection:Disconnect()
 
-        if cleanup then
-            cleanup()
-        end
+        cleanup()
     end
 end
 
@@ -133,24 +110,16 @@ end
     @return Cleanup -- A function that will end the observation
 ]=]
 local function ObserveAttribute<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = fn(instance:GetAttribute(name) :: T)
+    local cleanup, onChanged = ObserveValue(instance:GetAttribute(name) :: T, fn)
 
-    local function onChanged()
-        if cleanup then
-            cleanup()
-        end
-
-        cleanup = fn(instance:GetAttribute(name) :: T)
-    end
-
-    local connection = instance:GetAttributeChangedSignal(name):Connect(onChanged)
+    local connection = instance:GetAttributeChangedSignal(name):Connect(function()
+        onChanged(instance:GetAttribute(name) :: T)
+    end)
 
     return function()
         connection:Disconnect()
 
-        if cleanup then
-            cleanup()
-        end
+        cleanup()
     end
 end
 

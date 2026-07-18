@@ -8,31 +8,26 @@ export type Handler<T...> = Types.Handler<T...>
 -- Trait Types
 export type Signal<T> = Types.Signal<T>
 
-local Signal = require(script.Signal)
-local Instance = require(script.Instance)
-local Player = require(script.Player)
-local Collection = require(script.Collection)
-
 local Observe = {
     -- Signal Adapters
-    ChangedSignal = Signal.ChangedSignal,
-    SetClearSignals = Signal.SetClearSignals,
-    AddedRemovedSignal = Signal.AddedRemovedSignals,
+    ChangedSignal = require(script.Signal.ChangedSignal),
+    SetClearSignals = require(script.Signal.SetClearSignals),
+    AddedRemovedSignal = require(script.Signal.AddedRemovedSignals),
 
     -- Instance Management
-    Children = Instance.Children,
-    Descendants = Instance.Descendants,
-    Property = Instance.Property,
-    Attribute = Instance.Attribute,
+    Children = require(script.Instance.Children),
+    Descendants = require(script.Instance.Descendants),
+    Property = require(script.Instance.Property),
+    Attribute = require(script.Instance.Attribute),
 
     -- Player Management
-    Players = Player.Players,
-    Character = Player.Character,
-    PlayerCharacters = Player.PlayerCharacters,
+    Players = require(script.Player.Players),
+    Character = require(script.Player.Character),
+    PlayerCharacters = require(script.Player.PlayerCharacters),
 
     -- Collection Management
-    Tags = Collection.Tags,
-    Tagged = Collection.Tagged,
+    Tags = require(script.Collection.Tags),
+    Tagged = require(script.Collection.Tagged),
 }
 
 return Observe

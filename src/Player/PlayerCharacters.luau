@@ -12,9 +12,9 @@ local ObserveCharacter = require(script.Parent.Character)
 
     Observe all player character pairs in the game.
 ]=]
-local function ObservePlayerCharacters(fn: Handler<Player, Model>): Cleanup
+local function ObservePlayerCharacters(fn: Handler<Player, Model?>): Cleanup
     return ObservePlayers(function(player: Player)
-        return ObserveCharacter(player, function(character: Model)
+        return ObserveCharacter(player, function(character: Model?)
             return (fn :: any)(player, character)
         end)
     end)

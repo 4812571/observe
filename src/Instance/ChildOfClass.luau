@@ -6,25 +6,31 @@ type Handler<T...> = Types.Handler<T...>
 --[=[
     @within Observe
     @param instance Instance -- The instance to observe
-    @param fn Handler<Instance> -- Called for the named child of the instance
+    @param className string -- The class name of the child to observe
+    @param fn Handler<Instance> -- Called for the first child of the instance with the given class
     @return Cleanup -- A function that will end the observation
 
-    Note: If there are multiple children with the same name, the first one will be observed.
-    -- If it is removed, another one will be chosen using FindFirstChild.
+    Note: If there are multiple children of the same class, the first one will be observed.
+    -- If it is removed, another one will be chosen using FindFirstChildOfClass.
 
     Note: This has to run code every time a child is added or removed.
 ]=]
-local function ObserveChild(instance: Instance, name: string, fn: Handler<Instance>): Cleanup
-    local child = instance:FindFirstChild(name)
+local function ObserveChildOfClass(instance: Instance, className: string, fn: Handler<Instance>): Cleanup
+    local child = instance:FindFirstChildOfClass(className)
     local cleanup = nil
 
     if child then
-        (fn :: any)(child)
+        cleanup = (fn :: any)(child)
     end
 
     local function onChildAdded(added)
         -- If there is already a currently observed child, we don't need to do anything.
         if child then
+            return
+        end
+
+        -- Only observe children with the matching class.
+        if added.ClassName ~= className then
             return
         end
 
@@ -48,8 +54,8 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
             cleanup = nil
         end
 
-        -- Check if there is another child with the same name
-        local foundChild = instance:FindFirstChild(name)
+        -- Check if there is another child of the same class
+        local foundChild = instance:FindFirstChildOfClass(className)
 
         -- If there is another child, handle it the same way as if it was added.
         if foundChild then
@@ -71,4 +77,4 @@ local function ObserveChild(instance: Instance, name: string, fn: Handler<Instan
     end
 end
 
-return ObserveChild
+return ObserveChildOfClass

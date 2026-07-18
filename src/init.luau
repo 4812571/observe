@@ -15,6 +15,8 @@ local Observe = {
     AddedRemovedSignal = require(script.Signal.AddedRemovedSignals),
 
     -- Instance Management
+    ChildOfClass = require(script.Instance.ChildOfClass),
+    ChildWhichIsA = require(script.Instance.ChildWhichIsA),
     Children = require(script.Instance.Children),
     Descendants = require(script.Instance.Descendants),
     Property = require(script.Instance.Property),
@@ -22,6 +24,7 @@ local Observe = {
 
     -- Player Management
     Players = require(script.Player.Players),
+    TeamPlayers = require(script.Player.TeamPlayers),
     Character = require(script.Player.Character),
     PlayerCharacters = require(script.Player.PlayerCharacters),
 

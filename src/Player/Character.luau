@@ -12,7 +12,7 @@ local ObserveSetClearSignals = require(script.Parent.Parent.Signal.SetClearSigna
 
     Observe the character of a given player
 ]=]
-local function ObserveCharacter(player: Player, fn: Handler<Model>): Cleanup
+local function ObserveCharacter(player: Player, fn: Handler<Model?>): Cleanup
     return ObserveSetClearSignals(player.Character, player.CharacterAdded, player.CharacterRemoving, fn)
 end
 

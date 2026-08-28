@@ -11,15 +11,15 @@ type Handler<T...> = Types.Handler<T...>
 
     Note: If the property is not a valid property of the instance, this will throw an error.
 ]=]
-local function ObserveProperty<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = (fn :: any)(instance[name] :: T)
+local function ObserveProperty<T>(instance: Instance, name: string, fn: Handler<T?>): Cleanup
+    local cleanup = (fn :: any)(instance[name])
 
     local function onChanged()
         if cleanup then
             cleanup()
         end
 
-        cleanup = (fn :: any)(instance[name] :: T)
+        cleanup = (fn :: any)(instance[name])
     end
 
     local connection = instance:GetPropertyChangedSignal(name):Connect(onChanged)

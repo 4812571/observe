@@ -9,15 +9,15 @@ type Handler<T...> = Types.Handler<T...>
     @param name string -- The name of the attribute to observe
     @return Cleanup -- A function that will end the observation
 ]=]
-local function ObserveAttribute<T>(instance: Instance, name: string, fn: Handler<T>): Cleanup
-    local cleanup = (fn :: any)(instance:GetAttribute(name) :: T)
+local function ObserveAttribute<T>(instance: Instance, name: string, fn: Handler<T?>): Cleanup
+    local cleanup = (fn :: any)(instance:GetAttribute(name))
 
     local function onChanged()
         if cleanup then
             cleanup()
         end
 
-        cleanup = (fn :: any)(instance:GetAttribute(name) :: T)
+        cleanup = (fn :: any)(instance:GetAttribute(name))
     end
 
     local connection = instance:GetAttributeChangedSignal(name):Connect(onChanged)
